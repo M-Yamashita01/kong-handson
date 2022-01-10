@@ -23,42 +23,42 @@ _transform: true
 # Each Kong entity (core entity or custom entity introduced by a plugin)
 # can be listed in the top-level as an array of objects:
 
-services:
-- name: user-api
-  url: http://localhost:8002
-  # Entities that have a foreign-key relationship can be nested:
-  routes:
-  - name: user-api-routes
-    paths:
-    - /user-api
-  # proxy-cache プラグインを設定する
-  plugins:
-  - name: proxy-cache
-    config:
-      content_type:
-        - application/json
-      cache_ttl: 30
-      strategy: memory
-  - name: key-auth
-- name: client-api
-  url: http://localhost:8003
-  # Entities that have a foreign-key relationship can be nested:
-  routes:
-  - name: client-api-routes
-    paths:
-    - /client-api
+# services:
+# - name: user-api
+#   url: http://localhost:8002
+#   # Entities that have a foreign-key relationship can be nested:
+#   routes:
+#   - name: user-api-routes
+#     paths:
+#     - /user-api
+#   # proxy-cache プラグインを設定する
+#   plugins:
+#   - name: proxy-cache
+#     config:
+#       content_type:
+#         - application/json
+#       cache_ttl: 30
+#       strategy: memory
+#   - name: key-auth
+# - name: client-api
+#   url: http://localhost:8003
+#   # Entities that have a foreign-key relationship can be nested:
+#   routes:
+#   - name: client-api-routes
+#     paths:
+#     - /client-api
 
 # キーを設定した consumer を設定する
-consumers:
-  - username: user-api-user
-    keyauth_credentials:
-      # キーにmy-keyを設定する
-      - key: my-key
-    plugins:
-      - name: rate-limiting
-        config:
-          minute: 5
-          policy: local
+# consumers:
+#   - username: user-api-user
+#     keyauth_credentials:
+#       # キーにmy-keyを設定する
+#       - key: my-key
+#     plugins:
+#       - name: rate-limiting
+#         config:
+#           minute: 5
+#           policy: local
 # routes:
 # - name: another-route
 #   # Relationships can also be specified between top-level entities,
