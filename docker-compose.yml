@@ -1,7 +1,7 @@
 version: '3.9'
 
 x-kong-config: &kong-env
-  KONG_DATABASE: ${KONG_DATABASE:-off}
+  KONG_DATABASE: ${KONG_DATABASE:-postgres}
   KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
   KONG_PG_HOST: db
   KONG_PG_USER: ${KONG_PG_USER:-kong}
@@ -55,6 +55,8 @@ services:
     platform: linux/arm64
     image: "${KONG_DOCKER_TAG:-kong:latest}"
     user: "${KONG_USER:-kong}"
+    depends_on:
+      - db
     environment:
       <<: *kong-env
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
@@ -116,6 +118,27 @@ services:
       - kong-net
     volumes:
       - kong_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  user-api:
+    container_name: user-api
+    image: user-api
+    build: ./user-api
+    networks:
+      - kong-net
+    ports:
+      - "8002:8002"
+
+  client-api:
+    container_name: client-api
+    image: client-api
+    build: ./client-api
+    networks:
+      - kong-net
+    ports:
+      - "8003:8003"
+
 
 secrets:
   kong_postgres_password:
