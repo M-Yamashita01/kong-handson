@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
+
+gem 'kong', git: 'https://github.com/mtmail/kong-client-ruby', branch: 'kong1dot1'
