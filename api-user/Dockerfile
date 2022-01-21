@@ -11,4 +11,4 @@ RUN bundle config path vendor/bundle && bundle install
 
 COPY . .
 
-CMD ["/bin/sh"]
+CMD ["sleep", "infinity"]
