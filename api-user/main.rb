@@ -14,10 +14,11 @@ end
 
 service = Kong::Service.new(
   {
-    name: 'MockbinService',
+    name: 'example_service',
     protocol: 'https',
     host: 'mockbin.org',
-    path: '/request'
+    path: '/request',
+    port: 443
   }
 )
 
@@ -25,14 +26,12 @@ service.create
 
 route = Kong::Route.new(
   {
-    name: 'MockbinRoute',
+    name: 'mocking',
     service: {
       id: service.id
     },
-    paths: ['/someservice'],
-    methods: ['GET'],
-    strip_path: false,
-    preserve_host: false
+    paths: ['/mock'],
+    methods: ['GET']
   }
 )
 
