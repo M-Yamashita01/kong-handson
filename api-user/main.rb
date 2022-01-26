@@ -1,7 +1,7 @@
 require 'kong'
+require_relative './kong2_compatible.rb'
 
 Kong::Client.api_url = 'http://kong:8001'
-
 
 Kong::Plugin.all.each(&:delete)
 Kong::Route.all.each(&:delete)
@@ -36,16 +36,6 @@ route.create
 consumer = Kong::Consumer.new({ username: 'test-user' })
 consumer.create
 
-cursor = {
-  'config': {
-    minute: 5
-  }
-}
-
-if cursor['config']
-  memo = flatten(cursor.delete('config'), 'config')
-end
-
 plugin = Kong::Plugin.new(
   {
     service: {
@@ -54,25 +44,12 @@ plugin = Kong::Plugin.new(
     consumer: {
       id: consumer.id
     },
-    name: 'rate-limiting',
+    name: "rate-limiting",
     config: {
-      minute: 5
+      second: 5
     }
   }
 )
 
-plugin.create
-
-
-def flatten(cursor, parent_key = nil, memo = {})
-  memo.tap do
-    case cursor
-    when Hash
-      cursor.keys.each do |key|
-        flatten(cursor[key], [parent_key, key].compact.join('.'), memo)
-      end
-    else
-      memo["#{parent_key}"] = cursor
-    end
-  end
-end
+# saveメソッドはputが送られてしまうので、オーバーライドしておくこと。
+plugin.save
