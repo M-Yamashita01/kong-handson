@@ -54,6 +54,19 @@ plugin = Kong::Plugin.new(
 
 plugin.create
 
+plugin2 = Kong::Plugin.new({
+  service: {
+    id: service.id
+  },
+  name: 'proxy-cache',
+  config: {
+    cache_ttl: 30,
+    strategy: 'memory'
+  }
+})
+
+plugin2.create
+
 upstream = Kong::Upstream.new({ name: 'upstream-service'})
 upstream.create
 
