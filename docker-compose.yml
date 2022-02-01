@@ -117,12 +117,10 @@ services:
     volumes:
       - kong_data:/var/lib/postgresql/data
 
-  api-user:
-    container_name: api-user
-    image: api-user
-    build: ./api-user
+  client:
+    build: ./client
     volumes:
-      - ./api-user:/app
+      - ./client:/app
     networks:
       - kong-net
 
