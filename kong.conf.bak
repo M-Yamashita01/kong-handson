@@ -1,4 +1,0 @@
-# データベースを利用しない
-database = on
-# kong.ymlのパスを指定する
-declarative_config = kong.yml

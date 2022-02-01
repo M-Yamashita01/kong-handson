@@ -18,6 +18,9 @@ volumes:
      type: tmpfs
      device: tmpfs
 
+networks:
+  kong-net:
+    external: false
 
 services:
   kong-migrations:
@@ -30,6 +33,8 @@ services:
       <<: *kong-env
     secrets:
       - kong_postgres_password
+    networks:
+      - kong-net
     restart: on-failure
 
   kong-migrations-up:
@@ -42,6 +47,8 @@ services:
       <<: *kong-env
     secrets:
       - kong_postgres_password
+    networks:
+      - kong-net
     restart: on-failure
 
   kong:
@@ -60,6 +67,8 @@ services:
       KONG_DECLARATIVE_CONFIG: "/opt/kong/kong.yaml"
     secrets:
       - kong_postgres_password
+    networks:
+      - kong-net
     ports:
       # The following two environment variables default to an insecure value (0.0.0.0)
       # according to the CIS Security test.
@@ -103,24 +112,10 @@ services:
     restart: on-failure
     stdin_open: true
     tty: true
+    networks:
+      - kong-net
     volumes:
       - kong_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  user-api:
-    container_name: user-api
-    image: user-api
-    build: ./user-api
-    ports:
-      - "8002:8002"
-
-  client-api:
-    container_name: client-api
-    image: client-api
-    build: ./client-api
-    ports:
-      - "8003:8003"
 
   api-user:
     container_name: api-user
@@ -128,6 +123,8 @@ services:
     build: ./api-user
     volumes:
       - ./api-user:/app
+    networks:
+      - kong-net
 
 
 secrets:
