@@ -1,5 +1,3 @@
-require 'pry'
-
 module Kong
   class Plugin
     def create
