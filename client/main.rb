@@ -3,24 +3,29 @@ require_relative './kong2_compatible.rb'
 
 Kong::Client.api_url = 'http://kong:8001'
 
+# Kongに登録されているサービスなどを全て削除
 Kong::Upstream.all.each(&:delete)
 Kong::Plugin.all.each(&:delete)
 Kong::Route.all.each(&:delete)
 Kong::Service.all.each(&:delete)
 Kong::Consumer.all.each(&:delete)
 
+# Consumer登録
+consumer = Kong::Consumer.new({ username: 'test-user' })
+consumer.create
+
+# Service登録
 service = Kong::Service.new(
   {
     name: 'example_service',
     protocol: 'https',
     host: 'mockbin.org',
-    path: '/request',
-    port: 443
+    path: '/request'
   }
 )
-
 service.create
 
+# Route登録
 route = Kong::Route.new(
   {
     name: 'mocking',
@@ -31,12 +36,9 @@ route = Kong::Route.new(
     methods: ['GET']
   }
 )
-
 route.create
 
-consumer = Kong::Consumer.new({ username: 'test-user' })
-consumer.create
-
+# Rate LimitingのPlugin登録
 plugin = Kong::Plugin.new(
   {
     service: {
@@ -47,45 +49,35 @@ plugin = Kong::Plugin.new(
     },
     name: "rate-limiting",
     config: {
-      second: 5
+      minute: 20,
+      hour: 500
     }
   }
 )
-
 plugin.create
 
-plugin2 = Kong::Plugin.new({
-  service: {
-    id: service.id
-  },
-  name: 'proxy-cache',
-  config: {
-    cache_ttl: 30,
-    strategy: 'memory'
-  }
-})
-
-plugin2.create
-
+# Upstream登録
 upstream = Kong::Upstream.new({ name: 'upstream-service'})
 upstream.create
 
-target1 = Kong::Target.new( {
+# Upstreamに紐づくTarget登録
+mockbin_target = Kong::Target.new( {
   upstream: {
     id: upstream.id
   },
   target: 'mockbin.org:443'
 })
-target1.create
+mockbin_target.create
 
-
-Kong::Target.new( {
+httpbin_target = Kong::Target.new( {
   upstream: {
     id: upstream.id
   },
   target: 'httpbin.org:443'
-}).create
+})
+httpbin_target.create
 
+# Upstreamを既存のServiceに紐付けて更新
 service2 = Kong::Service.new(
   {
     id: service.id,
